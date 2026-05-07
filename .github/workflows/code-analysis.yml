@@ -3,14 +3,28 @@ name: Salesforce Code Analyzer v5
 on:
 
   push:
+
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'bugfix/**'
+
+    paths:
+      - 'src/**'
+      - 'force-app/**'
+      - 'classes/**'
+      - 'triggers/**'
+      - 'lwc/**'
+      - 'aura/**'
+
+
+  pull_request:
+
     branches:
       - main
       - develop
 
-  pull_request:
-    branches:
-      - main
-      - develop
 
 jobs:
 
@@ -37,7 +51,17 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 3 - Install Salesforce CLI
+      # STEP 3 - Setup Java
+      # ----------------------------------------
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+
+      # ----------------------------------------
+      # STEP 4 - Install Salesforce CLI
       # ----------------------------------------
       - name: Install Salesforce CLI
         run: |
@@ -45,7 +69,7 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 4 - Verify Salesforce CLI
+      # STEP 5 - Verify Salesforce CLI
       # ----------------------------------------
       - name: Verify Salesforce CLI
         run: |
@@ -53,7 +77,7 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 5 - Install Code Analyzer v5
+      # STEP 6 - Install Code Analyzer
       # ----------------------------------------
       - name: Install Code Analyzer
         run: |
@@ -61,7 +85,7 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 6 - Verify Code Analyzer
+      # STEP 7 - Verify Code Analyzer
       # ----------------------------------------
       - name: Verify Code Analyzer
         run: |
@@ -69,37 +93,36 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 7 - Create Reports Folder
+      # STEP 8 - Create Reports Folder
       # ----------------------------------------
       - name: Create Reports Directory
         run: |
-          mkdir reports
+          mkdir -p reports
 
 
       # ----------------------------------------
-      # STEP 8 - Generate JSON Report
+      # STEP 9 - Run JSON Analysis
       # ----------------------------------------
       - name: Run JSON Analysis
         run: |
           sf code-analyzer run \
-          --workspace force-app \
-          --output-file reports/results.json \
-          --output-file-format json
+          --workspace . \
+          --output-file reports/results.json
 
 
       # ----------------------------------------
-      # STEP 9 - Generate HTML Report
+      # STEP 10 - Run HTML Analysis
       # ----------------------------------------
       - name: Run HTML Analysis
         run: |
           sf code-analyzer run \
-          --workspace force-app \
-          --output-file reports/results.html \
-          --output-file-format html
+          --workspace . \
+          --view detail \
+          --output-file reports/results.html
 
 
       # ----------------------------------------
-      # STEP 10 - Upload Reports
+      # STEP 11 - Upload Reports
       # ----------------------------------------
       - name: Upload Reports
         uses: actions/upload-artifact@v4
@@ -109,8 +132,8 @@ jobs:
 
 
       # ----------------------------------------
-      # STEP 11 - Validate Violations
+      # STEP 12 - Validate Violations
       # ----------------------------------------
       - name: Validate Violations
         run: |
-          python3 scripts/validate_results.py
+          python3 scripts/validate_scripts.py
