@@ -82,7 +82,7 @@ jobs:
       - name: Run JSON Analysis
         run: |
           sf code-analyzer run \
-          --workspace force-app \
+          --workspace . \
           --output-file reports/results.json
 
       # ----------------------------------------
@@ -91,7 +91,7 @@ jobs:
       - name: Run HTML Analysis
         run: |
           sf code-analyzer run \
-          --workspace force-app \
+          --workspace . \
           --view detail \
           --output-file reports/results.html
 
