@@ -1,6 +1,7 @@
-name: Salesforce Code Analysis
+name: Salesforce Code Analyzer v5
 
 on:
+
   push:
     branches:
       - main
@@ -19,87 +20,97 @@ jobs:
 
     steps:
 
-      # -----------------------------------
+      # ----------------------------------------
       # STEP 1 - Checkout Repository
-      # -----------------------------------
-      - name: Checkout Source Code
+      # ----------------------------------------
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # -----------------------------------
-      # STEP 2 - Install Node.js
-      # -----------------------------------
+
+      # ----------------------------------------
+      # STEP 2 - Setup Node.js
+      # ----------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
-      # -----------------------------------
+
+      # ----------------------------------------
       # STEP 3 - Install Salesforce CLI
-      # -----------------------------------
+      # ----------------------------------------
       - name: Install Salesforce CLI
         run: |
           npm install -g @salesforce/cli
 
-      # -----------------------------------
+
+      # ----------------------------------------
       # STEP 4 - Verify Salesforce CLI
-      # -----------------------------------
+      # ----------------------------------------
       - name: Verify Salesforce CLI
         run: |
           sf --version
 
-      # -----------------------------------
-      # STEP 5 - Install Scanner Plugin
-      # -----------------------------------
-      - name: Install Salesforce Scanner
-        run: |
-          sf plugins install @salesforce/sfdx-scanner
 
-      # -----------------------------------
-      # STEP 6 - Verify Scanner
-      # -----------------------------------
-      - name: Verify Scanner
+      # ----------------------------------------
+      # STEP 5 - Install Code Analyzer v5
+      # ----------------------------------------
+      - name: Install Code Analyzer
         run: |
-          sf scanner --help
+          sf plugins install code-analyzer
 
-      # -----------------------------------
+
+      # ----------------------------------------
+      # STEP 6 - Verify Code Analyzer
+      # ----------------------------------------
+      - name: Verify Code Analyzer
+        run: |
+          sf code-analyzer rules
+
+
+      # ----------------------------------------
       # STEP 7 - Create Reports Folder
-      # -----------------------------------
+      # ----------------------------------------
       - name: Create Reports Directory
         run: |
           mkdir reports
 
-      # -----------------------------------
+
+      # ----------------------------------------
       # STEP 8 - Generate JSON Report
-      # -----------------------------------
-      - name: Run JSON Code Analysis
+      # ----------------------------------------
+      - name: Run JSON Analysis
         run: |
-          sf scanner run \
-          --target "force-app/**" \
-          --format json \
-          --outfile reports/results.json
+          sf code-analyzer run \
+          --workspace force-app \
+          --output-file reports/results.json \
+          --output-file-format json
 
-      # -----------------------------------
+
+      # ----------------------------------------
       # STEP 9 - Generate HTML Report
-      # -----------------------------------
-      - name: Run HTML Code Analysis
+      # ----------------------------------------
+      - name: Run HTML Analysis
         run: |
-          sf scanner run \
-          --target "force-app/**" \
-          --format html \
-          --outfile reports/results.html
+          sf code-analyzer run \
+          --workspace force-app \
+          --output-file reports/results.html \
+          --output-file-format html
 
-      # -----------------------------------
+
+      # ----------------------------------------
       # STEP 10 - Upload Reports
-      # -----------------------------------
+      # ----------------------------------------
       - name: Upload Reports
         uses: actions/upload-artifact@v4
         with:
-          name: scanner-reports
+          name: code-analyzer-reports
           path: reports/
 
-      # -----------------------------------
-      # STEP 11 - Fail If Violations Exist
-      # -----------------------------------
+
+      # ----------------------------------------
+      # STEP 11 - Validate Violations
+      # ----------------------------------------
       - name: Validate Violations
         run: |
           python3 scripts/validate_results.py
