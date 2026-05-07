@@ -83,9 +83,7 @@ jobs:
         run: |
           sf code-analyzer run \
           --workspace force-app \
-          --output-file reports/results.json \
-          --output-file-format json
-
+          --output-file reports/results.json
 
       # ----------------------------------------
       # STEP 9 - Generate HTML Report
@@ -94,8 +92,8 @@ jobs:
         run: |
           sf code-analyzer run \
           --workspace force-app \
-          --output-file reports/results.html \
-          --output-file-format html
+          --view detail \
+          --output-file reports/results.html
 
 
       # ----------------------------------------
