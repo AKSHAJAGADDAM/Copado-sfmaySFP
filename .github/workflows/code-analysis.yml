@@ -136,4 +136,4 @@ jobs:
       # ----------------------------------------
       - name: Validate Violations
         run: |
-          python3 scripts/validate_results.py
+          python3 scripts/validate_scripts.py
