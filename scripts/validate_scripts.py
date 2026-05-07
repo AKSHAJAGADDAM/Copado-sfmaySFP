@@ -1,23 +1,49 @@
 import json
 import sys
 
-with open("reports/results.json", "r") as file:
-    data = json.load(file)
+print("Reading Code Analyzer Results...")
+
+try:
+
+    with open("reports/results.json", "r") as file:
+        data = json.load(file)
+
+except Exception as e:
+
+    print(f"Error reading JSON report: {e}")
+    sys.exit(1)
+
+
+# ----------------------------------------
+# v5 Structure
+# ----------------------------------------
 
 violations = data.get("violations", [])
 
-print(f"Total Violations: {len(violations)}")
+print(f"\nTotal Violations: {len(violations)}\n")
+
 
 for violation in violations:
+
+    rule = violation.get("rule")
+    severity = violation.get("severity")
+    message = violation.get("message")
+
     print(
-        f"Rule: {violation.get('ruleName')} | "
-        f"Severity: {violation.get('severity')}"
+        f"Rule: {rule} | "
+        f"Severity: {severity} | "
+        f"Message: {message}"
     )
 
-# Fail pipeline if violations exist
+
+# ----------------------------------------
+# FAIL PIPELINE
+# ----------------------------------------
+
 if len(violations) > 0:
-    print("Code Analysis FAILED")
+
+    print("\nCode Analysis FAILED")
     sys.exit(1)
 
-print("Code Analysis PASSED")
+print("\nCode Analysis PASSED")
 sys.exit(0)
