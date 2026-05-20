@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="Employee Welcome">
+        <div class="slds-p-around_medium">
+
+            <lightning-input
+                label="Enter Employee Name"
+                value={employeeName}
+                onchange={handleChange}>
+            </lightning-input>
+
+            <p class="welcome-text">
+                Welcome to the team, {employeeName}!
+            </p>
+
+            <lightning-button
+                label="Show Greeting"
+                variant="brand"
+                onclick={showMessage}>
+            </lightning-button>
+
+        </div>
+    </lightning-card>
+</template>
